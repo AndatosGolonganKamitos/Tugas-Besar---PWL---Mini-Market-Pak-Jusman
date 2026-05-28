@@ -7,10 +7,16 @@
 
     <div class="max-w-3xl mx-auto">
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <form action="{{ isset($product) ? route('master.products.update', $product) : route('master.products.store') }}" method="POST">
-                @csrf
-                @if(isset($product)) @method('PUT') @endif
+            <form action="{{ isset($product)
+                ? route('master.products.update', $product)
+                : route('master.products.store') }}"
+                method="POST">
 
+                @csrf
+
+                @if(isset($product))
+                    @method('PUT')
+                @endif
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <x-input-label for="code" value="Kode Produk" />
@@ -34,6 +40,12 @@
                         <x-input-label for="category_id" value="Kategori" />
                         <select id="category_id" name="category_id" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             <option value="">Pilih Kategori</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}"
+                                    {{ old('category_id', $product->category_id ?? '') == $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
                         </select>
                         <x-input-error :messages="$errors->get('category_id')" class="mt-2" />
                     </div>
@@ -42,7 +54,14 @@
                         <x-input-label for="supplier_id" value="Supplier" />
                         <select id="supplier_id" name="supplier_id" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             <option value="">Pilih Supplier</option>
+                            @foreach($suppliers as $supplier)
+                                <option value="{{ $supplier->id }}"
+                                    {{ old('supplier_id', $product->supplier_id ?? '') == $supplier->id ? 'selected' : '' }}>
+                                    {{ $supplier->name }}
+                                </option>
+                            @endforeach
                         </select>
+
                         <x-input-error :messages="$errors->get('supplier_id')" class="mt-2" />
                     </div>
 
@@ -82,6 +101,21 @@
                         <x-input-error :messages="$errors->get('unit')" class="mt-2" />
                     </div>
                 </div>
+            <div class="md:col-span-2">
+                <x-input-label for="is_active" value="Status" />
+                <select id="is_active"
+                    name="is_active"
+                    class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="1"
+                        {{ (old('is_active', $product->is_active ?? true) == 1) ? 'selected' : '' }}>
+                        Aktif
+                    </option>
+                    <option value="0"
+                        {{ (old('is_active', $product->is_active ?? true) == 0) ? 'selected' : '' }}>
+                        Nonaktif
+                    </option>
+                </select>
+            </div>
 
                 <div class="mt-6 flex items-center gap-3">
                     <a href="{{ route('master.products.index') }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">Batal</a>

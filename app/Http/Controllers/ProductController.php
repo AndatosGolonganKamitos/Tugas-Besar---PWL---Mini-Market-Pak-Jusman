@@ -1,0 +1,147 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Supplier;
+use App\Models\Category;
+use App\Models\Product;
+use Illuminate\Http\Request;
+
+class ProductController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $products = Product::with('category')->latest()->get();
+
+        return view('master.products.index', compact('products'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        $categories = Category::all();
+
+        $suppliers = Supplier::all();
+
+        return view(
+            'master.products.form',
+            compact('categories', 'suppliers')
+        );
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|unique:products',
+            'name' => 'required',
+            'category_id' => 'required',
+            'purchase_price' => 'required|numeric',
+            'selling_price' => 'required|numeric',
+            'stock' => 'required|numeric',
+            'barcode' => 'nullable',
+            'supplier_id' => 'nullable',
+            'min_stock' => 'required|numeric',
+            'unit' => 'required',
+            'is_active' => 'required',
+        ]);
+
+        Product::create([
+            'code' => $request->code,
+            'name' => $request->name,
+            'category_id' => $request->category_id,
+            'purchase_price' => $request->purchase_price,
+            'selling_price' => $request->selling_price,
+            'stock' => $request->stock,
+            'is_active' => $request->is_active,
+            'barcode' => $request->barcode,
+            'supplier_id' => $request->supplier_id,
+            'min_stock' => $request->min_stock,
+            'unit' => $request->unit,
+        ]);
+
+        return redirect()
+            ->route('master.products.index')
+            ->with('success', 'Produk berhasil ditambahkan');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Product $product)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Product $product)
+    {
+        $categories = Category::all();
+
+        $suppliers = Supplier::all();
+
+        return view(
+            'master.products.form',
+            compact('product', 'categories', 'suppliers')
+        );
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+   public function update(Request $request, Product $product)
+    {
+        $request->validate([
+            'code' => 'required|unique:products,code,' . $product->id,
+            'name' => 'required',
+            'category_id' => 'required',
+            'purchase_price' => 'required|numeric',
+            'selling_price' => 'required|numeric',
+            'stock' => 'required|numeric',
+            'barcode' => 'nullable',
+            'supplier_id' => 'nullable',
+            'min_stock' => 'required|numeric',
+            'unit' => 'required',
+            'is_active' => 'required',
+        ]);
+
+        $product->update([
+            'code' => $request->code,
+            'name' => $request->name,
+            'category_id' => $request->category_id,
+            'purchase_price' => $request->purchase_price,
+            'selling_price' => $request->selling_price,
+            'stock' => $request->stock,
+            'is_active' => $request->is_active,
+            'barcode' => $request->barcode,
+            'supplier_id' => $request->supplier_id,
+            'min_stock' => $request->min_stock,
+            'unit' => $request->unit,
+        ]);
+
+        return redirect()
+            ->route('master.products.index')
+            ->with('success', 'Produk berhasil diupdate');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Product $product)
+    {
+        $product->delete();
+
+        return redirect()
+            ->route('master.products.index')
+            ->with('success', 'Produk berhasil dihapus');
+    }
+}

@@ -36,17 +36,105 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
-                <tr>
-                    <td colspan="8" class="px-6 py-12 text-center text-gray-400">
-                        <svg class="w-12 h-12 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                        <p>Belum ada produk</p>
-                    </td>
-                </tr>
-            </tbody>
+                    @forelse($products as $product)
+
+                    <tr>
+
+                        <td class="px-6 py-4">
+                            {{ $product->code }}
+                        </td>
+
+                        <td class="px-6 py-4">
+                            {{ $product->name }}
+                        </td>
+
+                        <td class="px-6 py-4">
+                            {{ $product->category->name ?? '-' }}
+                        </td>
+
+                        <td class="px-6 py-4">
+                            Rp {{ number_format($product->purchase_price, 0, ',', '.') }}
+                        </td>
+
+                        <td class="px-6 py-4">
+                            Rp {{ number_format($product->selling_price, 0, ',', '.') }}
+                        </td>
+
+                        <td class="px-6 py-4">
+                            {{ $product->stock }}
+                        </td>
+
+                        <td class="px-6 py-4">
+
+                            @if($product->is_active)
+
+                                <span class="text-green-600 font-semibold">
+                                    Aktif
+                                </span>
+
+                            @else
+
+                                <span class="text-red-600 font-semibold">
+                                    Nonaktif
+                                </span>
+
+                            @endif
+
+                        </td>
+
+                        <td class="px-6 py-4 text-right">
+
+                            <div class="flex justify-end gap-2">
+
+                                <a href="{{ route('master.products.edit', $product) }}"
+                                    class="px-3 py-1 bg-yellow-500 text-white text-sm rounded hover:bg-yellow-600">
+
+                                    Edit
+
+                                </a>
+
+                                <form action="{{ route('master.products.destroy', $product) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('Yakin ingin menghapus produk ini?')">
+
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button type="submit"
+                                        class="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600">
+
+                                        Hapus
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    @empty
+
+                    <tr>
+
+                        <td colspan="8"
+                            class="px-6 py-12 text-center text-gray-400">
+
+                            Belum ada produk
+
+                        </td>
+
+                    </tr>
+
+                    @endforelse
+
+                </tbody>
         </table>
 
         <div class="px-6 py-3 border-t border-gray-100 text-sm text-gray-500">
-            Total: 0 produk
+            Total: {{ count($products) }} produk
         </div>
     </div>
 </x-app-layout>

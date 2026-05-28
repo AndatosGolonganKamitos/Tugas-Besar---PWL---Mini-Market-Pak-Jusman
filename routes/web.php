@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -49,28 +51,56 @@ Route::middleware('auth')->group(function () {
     // ============================================================
     Route::middleware('role:owner,manager,supervisor')->prefix('master')->name('master.')->group(function () {
         // Categories
-        Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-        Route::get('/categories/create', fn () => view('master.categories.form'))->name('categories.create');
-        Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
-        Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
-        Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
-        Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+            Route::get('/categories', [CategoryController::class, 'index'])
+                ->name('categories.index');
+            Route::get('/categories/create', fn () => view('master.categories.form'))
+                ->name('categories.create');
+            Route::post('/categories', [CategoryController::class, 'store'])
+                ->name('categories.store');
+            Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])
+                ->name('categories.edit');
+            Route::put('/categories/{category}', [CategoryController::class, 'update'])
+                ->name('categories.update');
+            Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])
+                ->name('categories.destroy');
 
         // Products
-        Route::get('/products', fn () => view('master.products.index'))->name('products.index');
-        Route::get('/products/create', fn () => view('master.products.form'))->name('products.create');
-        Route::get('/products/{product}/edit', fn () => view('master.products.form'))->name('products.edit');
-        // TODO Backend: Route::post('/products', [ProductController::class, 'store'])->name('products.store');
-        // TODO Backend: Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
-        // TODO Backend: Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+            Route::get('/products', [ProductController::class, 'index'])
+                ->name('products.index');
 
-        // Suppliers
-        Route::get('/suppliers', fn () => view('master.suppliers.index'))->name('suppliers.index');
-        Route::get('/suppliers/create', fn () => view('master.suppliers.form'))->name('suppliers.create');
-        Route::get('/suppliers/{supplier}/edit', fn () => view('master.suppliers.form'))->name('suppliers.edit');
-        // TODO Backend: Route::post('/suppliers', [SupplierController::class, 'store'])->name('suppliers.store');
-        // TODO Backend: Route::put('/suppliers/{supplier}', [SupplierController::class, 'update'])->name('suppliers.update');
-        // TODO Backend: Route::delete('/suppliers/{supplier}', [SupplierController::class, 'destroy'])->name('suppliers.destroy');
+            Route::get('/products/create', [ProductController::class, 'create'])
+                ->name('products.create');
+
+            Route::post('/products', [ProductController::class, 'store'])
+                ->name('products.store');
+
+            Route::get('/products/{product}/edit', [ProductController::class, 'edit'])
+                ->name('products.edit');
+
+            Route::put('/products/{product}', [ProductController::class, 'update'])
+                ->name('products.update');
+
+            Route::delete('/products/{product}', [ProductController::class, 'destroy'])
+                ->name('products.destroy');
+
+       // Suppliers
+            Route::get('/suppliers', [SupplierController::class, 'index'])
+                ->name('suppliers.index');
+
+            Route::get('/suppliers/create', fn () => view('master.suppliers.form'))
+                ->name('suppliers.create');
+
+            Route::post('/suppliers', [SupplierController::class, 'store'])
+                ->name('suppliers.store');
+
+            Route::get('/suppliers/{supplier}/edit', [SupplierController::class, 'edit'])
+                ->name('suppliers.edit');
+
+            Route::put('/suppliers/{supplier}', [SupplierController::class, 'update'])
+                ->name('suppliers.update');
+
+            Route::delete('/suppliers/{supplier}', [SupplierController::class, 'destroy'])
+                ->name('suppliers.destroy');
     });
 
     // ============================================================
@@ -137,7 +167,6 @@ Route::middleware('auth')->group(function () {
     return view('notifications');
     })->middleware('auth');
 
-    
 
 
 });

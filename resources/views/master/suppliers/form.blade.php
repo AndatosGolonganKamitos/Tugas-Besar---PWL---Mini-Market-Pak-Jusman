@@ -7,9 +7,16 @@
 
     <div class="max-w-3xl mx-auto">
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <form action="{{ isset($supplier) ? route('master.suppliers.update', $supplier) : route('master.suppliers.store') }}" method="POST">
+            <form action="{{ isset($supplier)
+                ? route('master.suppliers.update', $supplier)
+                : route('master.suppliers.store') }}"
+                method="POST">
+
                 @csrf
-                @if(isset($supplier)) @method('PUT') @endif
+
+                @if(isset($supplier))
+                    @method('PUT')
+                @endif
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -54,6 +61,28 @@
                     <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition">
                         {{ isset($supplier) ? 'Simpan Perubahan' : 'Simpan' }}
                     </button>
+                </div>
+
+                <div class="md:col-span-2">
+
+                    <x-input-label for="is_active" value="Status" />
+
+                    <select id="is_active"
+                        name="is_active"
+                        class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+
+                        <option value="1"
+                            {{ (old('is_active', $supplier->is_active ?? true) == 1) ? 'selected' : '' }}>
+                            Aktif
+                        </option>
+
+                        <option value="0"
+                            {{ (old('is_active', $supplier->is_active ?? true) == 0) ? 'selected' : '' }}>
+                            Nonaktif
+                        </option>
+
+                    </select>
+
                 </div>
             </form>
         </div>
