@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -48,12 +49,12 @@ Route::middleware('auth')->group(function () {
     // ============================================================
     Route::middleware('role:owner,manager,supervisor')->prefix('master')->name('master.')->group(function () {
         // Categories
-        Route::get('/categories', fn () => view('master.categories.index'))->name('categories.index');
+        Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
         Route::get('/categories/create', fn () => view('master.categories.form'))->name('categories.create');
-        Route::get('/categories/{category}/edit', fn () => view('master.categories.form'))->name('categories.edit');
-        // TODO Backend: Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
-        // TODO Backend: Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
-        // TODO Backend: Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+        Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+        Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
+        Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+        Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
         // Products
         Route::get('/products', fn () => view('master.products.index'))->name('products.index');

@@ -7,9 +7,8 @@
 
     <div class="max-w-2xl mx-auto">
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <form action="{{ isset($category) ? route('master.categories.update', $category) : route('master.categories.store') }}" method="POST">
-                @csrf
-                @if(isset($category)) @method('PUT') @endif
+            <form action="{{ route('master.categories.store') }}" method="POST">
+            @csrf
 
                 <div class="space-y-4">
                     <div>
