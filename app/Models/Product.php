@@ -17,6 +17,7 @@ class Product extends Model
         'supplier_id',
         'min_stock',
         'unit',
+        'image',
         'is_active',
     ];
 
@@ -27,5 +28,9 @@ class Product extends Model
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
+    }
+    public function transactionItems()
+    {
+        return $this->hasMany(TransactionItem::class);
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,9 +16,9 @@ Route::get('/', function () {
 });
 
 // TODO Backend: Ganti closure ini dengan DashboardController
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     // Profile — sudah pakai controller, aman
@@ -139,10 +140,18 @@ Route::middleware('auth')->group(function () {
     // TODO Backend: Buat TransactionController, model Transaction + migrasi
     // ============================================================
     Route::prefix('transactions')->name('transactions.')->group(function () {
-        Route::middleware('role:owner,manager,supervisor')->get('/', fn () => view('transactions.index'))->name('index');
+        Route::middleware('role:owner,manager,supervisor')
+        ->get('/', [TransactionController::class, 'index'])
+         ->name('index');
         Route::middleware('role:owner,manager,cashier')
          ->get('/pos', [TransactionController::class, 'pos'])
          ->name('pos');
+         Route::post('/checkout', [TransactionController::class, 'checkout'])
+        ->name('checkout');
+        Route::get('/history',[TransactionController::class, 'index'])
+        ->name('history');
+        Route::get('/{transaction}', [TransactionController::class, 'show'])
+        ->name('show');
         // TODO Backend: Route::post('/pos', [TransactionController::class, 'store'])->name('store');
     });
 

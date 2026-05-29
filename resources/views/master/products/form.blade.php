@@ -7,11 +7,13 @@
 
     <div class="max-w-3xl mx-auto">
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <form action="{{ isset($product)
-                ? route('master.products.update', $product)
-                : route('master.products.store') }}"
-                method="POST">
-
+            <form
+                action="{{ isset($product)
+                    ? route('master.products.update', $product)
+                    : route('master.products.store') }}"
+                method="POST"
+                enctype="multipart/form-data"
+            >
                 @csrf
 
                 @if(isset($product))
@@ -123,6 +125,23 @@
                         {{ isset($product) ? 'Simpan Perubahan' : 'Simpan' }}
                     </button>
                 </div>
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-1">
+                        Foto Produk
+                    </label>
+
+                    <input
+                        type="file"
+                        name="image"
+                        class="w-full border rounded-lg px-3 py-2"
+                    >
+
+                </div>
+
+
+
             </form>
         </div>
     </div>

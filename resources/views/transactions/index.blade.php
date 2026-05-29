@@ -16,8 +16,28 @@
                     <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     <input type="text" placeholder="Cari transaksi..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-indigo-500 focus:border-indigo-500">
                 </div>
-                <input type="date" class="border border-gray-300 rounded-lg text-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
-                <input type="date" class="border border-gray-300 rounded-lg text-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+                <form method="GET" class="flex flex-wrap gap-3">
+                    <input
+                        type="date"
+                        name="start_date"
+                        value="{{ request('start_date') }}"
+                        class="border border-gray-300 rounded-lg text-sm px-3 py-2"
+                    >
+
+                    <input
+                        type="date"
+                        name="end_date"
+                        value="{{ request('end_date') }}"
+                        class="border border-gray-300 rounded-lg text-sm px-3 py-2"
+                    >
+
+                    <button
+                        class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm"
+                    >
+                        Filter
+                    </button>
+
+                </form>
                 <select class="border border-gray-300 rounded-lg text-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
                     <option value="">Semua Status</option>
                     <option value="completed">Selesai</option>
@@ -39,18 +59,68 @@
                     <th class="px-6 py-3 text-right">Aksi</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100">
-                <tr>
-                    <td colspan="7" class="px-6 py-12 text-center text-gray-400">
-                        <svg class="w-12 h-12 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
-                        <p>Belum ada transaksi</p>
-                    </td>
-                </tr>
-            </tbody>
+                <tbody class="divide-y divide-gray-100">
+
+                    @forelse($transactions as $transaction)
+
+                        <tr>
+
+                            <td class="px-6 py-4">
+                                {{ $transaction->invoice_number }}
+                            </td>
+
+                            <td class="px-6 py-4">
+                                {{ $transaction->created_at->format('d M Y H:i') }}
+                            </td>
+
+                            <td class="px-6 py-4">
+                                Admin
+                            </td>
+
+                            <td class="px-6 py-4">
+                                Utama
+                            </td>
+
+                            <td class="px-6 py-4 font-semibold">
+                                Rp {{ number_format($transaction->total, 0, ',', '.') }}
+                            </td>
+
+                            <td class="px-6 py-4">
+
+                                <span class="text-green-600 font-semibold">
+                                    {{ $transaction->status }}
+                                </span>
+
+                            </td>
+
+                            <td class="px-6 py-4 text-right">
+                                <a href="{{ route('transactions.show', $transaction) }}"
+                                   class="text-indigo-600 hover:text-indigo-800 font-medium">
+                                    Detail
+                                </a>
+                            </td>
+
+                        </tr>
+
+                    @empty
+
+                        <tr>
+                            <td colspan="7"
+                                class="px-6 py-12 text-center text-gray-400">
+
+                                Belum ada transaksi
+
+                            </td>
+                        </tr>
+
+                    @endforelse
+
+                </tbody>
+
         </table>
 
         <div class="px-6 py-3 border-t border-gray-100 text-sm text-gray-500">
-            Total: 0 transaksi
+            Total: {{ count($transactions) }} transaksi
         </div>
     </div>
 </x-app-layout>

@@ -53,6 +53,13 @@ class ProductController extends Controller
             'is_active' => 'required',
         ]);
 
+        $image = null;
+
+if ($request->hasFile('image')) {
+
+    $image = $request->file('image')
+        ->store('products', 'public');
+}
         Product::create([
             'code' => $request->code,
             'name' => $request->name,
@@ -65,6 +72,7 @@ class ProductController extends Controller
             'supplier_id' => $request->supplier_id,
             'min_stock' => $request->min_stock,
             'unit' => $request->unit,
+            'image' => $image,
         ]);
 
         return redirect()
