@@ -4,6 +4,8 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -138,7 +140,9 @@ Route::middleware('auth')->group(function () {
     // ============================================================
     Route::prefix('transactions')->name('transactions.')->group(function () {
         Route::middleware('role:owner,manager,supervisor')->get('/', fn () => view('transactions.index'))->name('index');
-        Route::middleware('role:owner,manager,cashier')->get('/pos', fn () => view('transactions.pos'))->name('pos');
+        Route::middleware('role:owner,manager,cashier')
+         ->get('/pos', [TransactionController::class, 'pos'])
+         ->name('pos');
         // TODO Backend: Route::post('/pos', [TransactionController::class, 'store'])->name('store');
     });
 
@@ -147,7 +151,8 @@ Route::middleware('auth')->group(function () {
     // TODO Backend: Buat InventoryController, model Inventory/Stock + migrasi
     // ============================================================
     Route::middleware('role:owner,manager,warehouse')->prefix('inventory')->name('inventory.')->group(function () {
-        Route::get('/', fn () => view('inventory.index'))->name('index');
+        Route::get('/', [InventoryController::class, 'index'])
+        ->name('index');
         Route::get('/stock-opname', fn () => view('inventory.stock-opname'))->name('stock-opname');
         // TODO Backend: Route::post('/stock-opname', [InventoryController::class, 'stockOpname'])->name('stock-opname.store');
     });

@@ -64,17 +64,92 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
+
+                @forelse($products as $product)
+
                 <tr>
-                    <td colspan="8" class="px-6 py-12 text-center text-gray-400">
-                        <svg class="w-12 h-12 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                        <p>Belum ada data inventaris</p>
+
+                    <td class="px-6 py-4">
+                        {{ $product->code }}
                     </td>
+
+                    <td class="px-6 py-4">
+                        {{ $product->name }}
+                    </td>
+
+                    <td class="px-6 py-4">
+                        {{ $product->category->name ?? '-' }}
+                    </td>
+
+                    <td class="px-6 py-4">
+                        Utama
+                    </td>
+
+                    <td class="px-6 py-4">
+                        {{ $product->stock }}
+                    </td>
+
+                    <td class="px-6 py-4">
+                        {{ $product->min_stock }}
+                    </td>
+
+                    <td class="px-6 py-4">
+
+                        @if($product->stock == 0)
+
+                            <span class="text-red-600 font-semibold">
+                                Habis
+                            </span>
+
+                        @elseif($product->stock <= $product->min_stock)
+
+                            <span class="text-amber-600 font-semibold">
+                                Menipis
+                            </span>
+
+                        @else
+
+                            <span class="text-green-600 font-semibold">
+                                Aman
+                            </span>
+
+                        @endif
+
+                    </td>
+
+                    <td class="px-6 py-4 text-right">
+
+                        <a href="{{ route('master.products.edit', $product) }}"
+                            class="px-3 py-1 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700">
+
+                            Update Stok
+
+                        </a>
+
+                    </td>
+
                 </tr>
+
+                @empty
+
+                <tr>
+
+                    <td colspan="8"
+                        class="px-6 py-12 text-center text-gray-400">
+
+                        Belum ada data inventaris
+
+                    </td>
+
+                </tr>
+
+                @endforelse
+
             </tbody>
 
         {{-- TODO Backend: Ganti 0 dengan total produk --}}
         <div class="px-6 py-3 border-t border-gray-100 text-sm text-gray-500">
-            Total: 0 produk
+            Total: {{ count($products) }} produk
         </div>
     </div>
 </x-app-layout>

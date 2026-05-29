@@ -28,24 +28,53 @@
             </div>
 
             {{-- TODO Backend: Ganti dengan loop data produk $products — @foreach($products as $product) --}}
-            {{-- Product Grid --}}
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-3 hover:border-indigo-300 hover:shadow cursor-pointer transition">
-                    <div class="aspect-square bg-gray-100 rounded-lg mb-2 flex items-center justify-center text-gray-400">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                    </div>
-                    <p class="text-sm font-medium text-gray-900 truncate">Nama Produk</p>
-                    <p class="text-xs text-gray-400">Stok: 0</p>
-                    <p class="text-sm font-bold text-indigo-600 mt-1">Rp 0</p>
-                </div>
 
-                <div class="bg-white rounded-xl shadow-sm border-2 border-dashed border-gray-300 p-3 flex flex-col items-center justify-center text-gray-400 hover:border-indigo-400 hover:text-indigo-500 cursor-pointer transition min-h-[180px]">
-                    <svg class="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    <span class="text-xs">Cari produk...</span>
-                </div>
-            </div>
+    @forelse($products as $product)
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-3 hover:border-indigo-300 hover:shadow cursor-pointer transition">
+
+        <div class="aspect-square bg-gray-100 rounded-lg mb-2 flex items-center justify-center text-gray-400">
+
+            <svg class="w-8 h-8"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24">
+
+                <path stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+
+            </svg>
+
         </div>
 
+        <p class="text-sm font-medium text-gray-900 truncate">
+            {{ $product->name }}
+        </p>
+
+        <p class="text-xs text-gray-400">
+            Stok: {{ $product->stock }}
+        </p>
+
+        <p class="text-sm font-bold text-indigo-600 mt-1">
+            Rp {{ number_format($product->selling_price, 0, ',', '.') }}
+        </p>
+
+    </div>
+
+    @empty
+
+    <div class="col-span-full text-center py-10 text-gray-400">
+
+        Tidak ada produk
+
+    </div>
+
+    @endforelse
+
+</div>
         {{-- Cart Panel --}}
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col" style="max-height: calc(100vh - 12rem);">
             <div class="p-4 border-b border-gray-100">
