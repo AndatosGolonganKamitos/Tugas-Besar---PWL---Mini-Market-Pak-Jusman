@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Transaction;
+
 
 class Branch extends Model
 {
@@ -30,4 +32,10 @@ class Branch extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
 }

@@ -25,19 +25,47 @@
                     </div>
 
                     <div>
+
                         <x-input-label for="password" value="Password" />
-                        <x-text-input id="password" name="password" type="password" class="mt-1 block w-full" {{ isset($user) ? '' : 'required' }} />
+
+                        <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            class="mt-1 block w-full border border-gray-300 rounded-lg px-4 py-2"
+                            {{ isset($user) ? '' : 'required' }}
+                        >
+
                         <x-input-error :messages="$errors->get('password')" class="mt-2" />
-                        @if(isset($user))
-                            <p class="text-xs text-gray-400 mt-1">Kosongkan jika tidak ingin mengubah password</p>
-                        @endif
+
+                        <p class="text-xs text-gray-400 mt-1">
+
+                            Kosongkan jika tidak ingin mengubah password
+
+                        </p>
+
                     </div>
 
+
                     <div>
-                        <x-input-label for="password_confirmation" value="Konfirmasi Password" />
-                        <x-text-input id="password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full" />
-                        <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+
+                        <x-input-label
+                            for="password_confirmation"
+                            value="Konfirmasi Password" />
+
+                        <input
+                            id="password_confirmation"
+                            name="password_confirmation"
+                            type="password"
+                            class="mt-1 block w-full border border-gray-300 rounded-lg px-4 py-2"
+                        >
+
+                        <x-input-error
+                            :messages="$errors->get('password_confirmation')"
+                            class="mt-2" />
+
                     </div>
+
 
                     <div>
                         <x-input-label for="role" value="Role" />
@@ -54,9 +82,28 @@
 
                     <div>
                         <x-input-label for="branch_id" value="Cabang" />
-                        <select id="branch_id" name="branch_id" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                            <option value="">Pilih Cabang</option>
-                        </select>
+                    <select
+                        name="branch_id"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2">
+
+                        <option value="">
+                            Pilih Cabang
+                        </option>
+
+                        @foreach($branches as $branch)
+
+                            <option
+                                value="{{ $branch->id }}"
+                                {{ old('branch_id', $user->branch_id ?? '') == $branch->id ? 'selected' : '' }}>
+
+                                {{ $branch->name }}
+
+                            </option>
+
+                        @endforeach
+
+                    </select>
+
                         <x-input-error :messages="$errors->get('branch_id')" class="mt-2" />
                     </div>
 

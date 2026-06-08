@@ -6,6 +6,8 @@
     x-data="{
         cart: [],
         search: '',
+        selectedCategory: 'Semua',
+
 
         addToCart(product) {
 
@@ -70,9 +72,6 @@
     }"
 
     class="grid grid-cols-1 xl:grid-cols-3 gap-6"
->
-
-        >
         {{-- Products Panel --}}
         <div class="xl:col-span-2 space-y-4">
             {{-- Search & Category Filter --}}
@@ -80,95 +79,172 @@
                 <div class="flex gap-3">
                     <div class="relative flex-1">
                         <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <input type="text" x-model="search"
-                               x-on:input.debounce="console.log($event.target.value)"
-                               placeholder="Cari produk (nama / barcode)..." autofocus
-                               class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-indigo-500 focus:border-indigo-500">
-                    </div>
+                        <input   type="text"
+                                id="searchProduct"
+                                x-model="search"
+                                x-on:input.debounce="console.log($event.target.value)"
+                                placeholder="Cari produk..."
+                                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
                 </div>
                 <div class="flex gap-2 mt-3 overflow-x-auto pb-1">
-                    <button class="px-3 py-1.5 text-xs font-medium rounded-full bg-indigo-100 text-indigo-700 whitespace-nowrap">Semua</button>
-                    <button class="px-3 py-1.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 whitespace-nowrap">Makanan</button>
-                    <button class="px-3 py-1.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 whitespace-nowrap">Minuman</button>
-                    <button class="px-3 py-1.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 whitespace-nowrap">Rokok</button>
-                    <button class="px-3 py-1.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 whitespace-nowrap">Sembako</button>
-                    <button class="px-3 py-1.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 whitespace-nowrap">Alat Tulis</button>
+                    <button
+                        @click="selectedCategory = 'Semua'"
+                        class="px-3 py-1.5 text-xs font-medium rounded-full bg-indigo-100 text-indigo-700 whitespace-nowrap">
+                        Semua
+                    </button>
+                    <button
+                        @click="selectedCategory = 'Makanan'"
+                        class="px-3 py-1.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 whitespace-nowrap">
+
+                        Makanan
+
+                    </button>
+
+                    <button
+                        @click="selectedCategory = 'Minuman'"
+                        class="px-3 py-1.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 whitespace-nowrap">
+
+                        Minuman
+
+                    </button>
+
+                    <button
+                        @click="selectedCategory = 'Rokok'"
+                        class="px-3 py-1.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 whitespace-nowrap">
+                        Rokok
+                    </button>
+                    <button
+                        @click="selectedCategory = 'Sembako'"
+                        class="px-3 py-1.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 whitespace-nowrap">
+                        Sembako
+                    </button>
+                    <button
+                        @click="selectedCategory = 'Alat Tulis'"
+                        class="px-3 py-1.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 whitespace-nowrap">
+                        Alat Tulis
+                    </button>
                 </div>
             </div>
 
             {{-- TODO Backend: Ganti dengan loop data produk $products — @foreach($products as $product) --}}
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+@forelse($products as $product)
 
-    @forelse($products as $product)
-    <div
-    x-show="'{{ strtolower($product->name) }}'
-    .includes(search.toLowerCase())"
+<div
+x-show="
+'{{ strtolower($product->name) }}'
+.includes(search.toLowerCase())
+
+&&
+
+(
+    selectedCategory === 'Semua'
+
+    ||
+
+    selectedCategory === '{{ $product->category->name ?? '' }}'
+)
+"
+
 >
 
-         <div
-                    @click='addToCart({
-                        id: {{ $product->id }},
-                        name: "{{ $product->name }}",
-                        price: {{ $product->selling_price }}
-                    })'
+    <div
+        @click='
 
-                    class="bg-white rounded-xl shadow-sm border border-gray-200 p-3 hover:border-indigo-300 hover:shadow cursor-pointer transition"
+        let cartItem = cart.find(i => i.id === {{ $product->id }});
+
+        let qtyInCart = cartItem ? cartItem.qty : 0;
+
+        if (qtyInCart < {{ $product->stock }}) {
+
+            addToCart({
+                id: {{ $product->id }},
+                name: "{{ $product->name }}",
+                price: {{ $product->selling_price }}
+            });
+
+        }
+
+        '
+
+
+
+        class="bg-white rounded-xl shadow-sm border border-gray-200 p-3 transition
+
+        {{ $product->stock <= 0
+            ? 'opacity-50 cursor-not-allowed'
+            : 'hover:border-indigo-300 hover:shadow cursor-pointer' }}"
+
+    >
+
+        <div class="aspect-square bg-gray-100 rounded-lg mb-2 overflow-hidden">
+
+            @if($product->image)
+
+                <img
+                    src="{{ asset('storage/' . $product->image) }}"
+                    class="w-full h-full object-cover"
                 >
-            <div class="aspect-square bg-gray-100 rounded-lg mb-2 overflow-hidden">
 
-                @if($product->image)
+            @else
 
-                    <img
-                        src="{{ asset('storage/' . $product->image) }}"
-                        class="w-full h-full object-cover"
-                    >
+                <div class="w-full h-full flex items-center justify-center text-gray-400">
 
-                @else
+                    <svg class="w-8 h-8"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
 
-                    <div class="w-full h-full flex items-center justify-center text-gray-400">
+                        <path stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1.5"
+                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
 
-                        <svg class="w-8 h-8"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24">
-
-                            <path stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="1.5"
-                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-
-                        </svg>
-
-                    </div>
-
-                @endif
-
-            </div>
-
-
-                    <p class="text-sm font-medium text-gray-900 truncate">
-                        {{ $product->name }}
-                    </p>
-
-                    <p class="text-xs text-gray-400">
-                        Stok: {{ $product->stock }}
-                    </p>
-
-                    <p class="text-sm font-bold text-indigo-600 mt-1">
-                        Rp {{ number_format($product->selling_price, 0, ',', '.') }}
-                    </p>
+                    </svg>
 
                 </div>
 
-                @empty
-                </div>
-                <div class="col-span-full text-center py-10 text-gray-400">
+            @endif
 
-                    Tidak ada produk
+        </div>
 
-                </div>
+        <p class="text-sm font-medium text-gray-900 truncate">
+            {{ $product->name }}
+        </p>
 
-                @endforelse
+        <p class="text-xs mt-1
+            {{ $product->stock < 5
+                ? 'text-red-500 font-semibold'
+                : 'text-gray-400' }}">
+
+            Stok: {{ $product->stock }}
+
+            @if($product->stock < 5)
+
+                ⚠ Hampir habis
+
+            @endif
+
+        </p>
+
+
+        <p class="text-sm font-bold text-indigo-600 mt-1">
+            Rp {{ number_format($product->selling_price, 0, ',', '.') }}
+        </p>
+
+    </div>
+
+</div>
+
+@empty
+
+<div class="col-span-full text-center py-10 text-gray-400">
+    Tidak ada produk
+</div>
+
+@endforelse
+
 
             </div>
         {{-- Cart Panel --}}

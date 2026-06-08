@@ -137,6 +137,12 @@
                         name="image"
                         class="w-full border rounded-lg px-3 py-2"
                     >
+                    @if(isset($product) && $product->image)
+                        <img
+                            src="{{ asset('storage/' . $product->image) }}"
+                            class="w-32 mt-3 rounded-lg"
+                        >
+                    @endif
 
                 </div>
 

@@ -7,6 +7,10 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\BranchController;
+
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,7 +32,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/notifications', function () {
     return view('notifications');
-});
+    });
 
       Route::get('/notifications/read/{id}', function ($id) {
 
@@ -45,7 +49,7 @@ Route::middleware('auth')->group(function () {
     }
 
     return redirect('/notifications');
-});
+    });
     // ============================================================
     // MASTER DATA (Akses: Owner, Manajer, Supervisor)
     // TODO Backend: Buat CategoryController, ProductController, SupplierController
@@ -110,29 +114,57 @@ Route::middleware('auth')->group(function () {
     // CABANG (Akses: Owner, Manajer)
     // Model Branch sudah ada + migrasi. TODO Backend: Buat BranchController
     // ============================================================
-    Route::middleware('role:owner,manager')->prefix('branches')->name('branches.')->group(function () {
-        Route::get('/', fn () => view('branches.index'))->name('index');
-        Route::get('/create', fn () => view('branches.form'))->name('create');
-        Route::get('/{branch}', fn () => view('branches.show'))->name('show');
-        Route::get('/{branch}/edit', fn () => view('branches.form'))->name('edit');
+        Route::middleware('role:owner,manager')->prefix('branches')->name('branches.')->group(function () {
+        Route::get('/', [BranchController::class, 'index'])
+            ->name('index');
+
+         Route::get('/create', [BranchController::class, 'create'])
+            ->name('create');
+
+        Route::post('/', [BranchController::class, 'store'])
+            ->name('store');
+
+        Route::get('/{branch}/edit', [BranchController::class, 'edit'])
+            ->name('edit');
+
+        Route::put('/{branch}', [BranchController::class, 'update'])
+            ->name('update');
+
+        Route::delete('/{branch}', [BranchController::class, 'destroy'])
+            ->name('destroy');
+    });
+
         // TODO Backend: Route::post('/', [BranchController::class, 'store'])->name('store');
         // TODO Backend: Route::put('/{branch}', [BranchController::class, 'update'])->name('update');
         // TODO Backend: Route::delete('/{branch}', [BranchController::class, 'destroy'])->name('destroy');
-    });
 
     // ============================================================
     // PENGGUNA (Akses: Owner only)
     // Model User sudah ada. TODO Backend: Buat UserController
     // ============================================================
     Route::middleware('role:owner')->prefix('users')->name('users.')->group(function () {
-        Route::get('/', fn () => view('users.index'))->name('index');
-        Route::get('/create', fn () => view('users.form'))->name('create');
-        Route::get('/{user}/edit', fn () => view('users.form'))->name('edit');
+    Route::get('/', [UserController::class, 'index'])
+        ->name('index');
+
+    Route::get('/create', [UserController::class, 'create'])
+        ->name('create');
+
+    Route::post('/', [UserController::class, 'store'])
+        ->name('store');
+
+    Route::get('/{user}/edit', [UserController::class, 'edit'])
+        ->name('edit');
+
+    Route::put('/{user}', [UserController::class, 'update'])
+        ->name('update');
+
+    Route::delete('/{user}', [UserController::class, 'destroy'])
+        ->name('destroy');
+    });
+
         // TODO Backend: Route::post('/', [UserController::class, 'store'])->name('store');
         // TODO Backend: Route::put('/{user}', [UserController::class, 'update'])->name('update');
         // TODO Backend: Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
-    });
-
     // ============================================================
     // TRANSAKSI
     // POS (Akses: Owner, Manajer, Kasir)
@@ -171,10 +203,27 @@ Route::middleware('auth')->group(function () {
     // TODO Backend: Buat ReportController
     // ============================================================
     Route::middleware('role:owner,manager,supervisor')->prefix('reports')->name('reports.')->group(function () {
-        Route::get('/', fn () => view('reports.index'))->name('index');
-        Route::get('/sales', fn () => view('reports.sales'))->name('sales');
-        Route::get('/stock', fn () => view('reports.stock'))->name('stock');
-    });
+
+            Route::get('/', fn () => view('reports.index'))
+                ->name('index');
+
+            Route::get('/sales', [ReportController::class, 'index'])
+                ->name('sales');
+
+            Route::get('/stock', [ReportController::class, 'stock'])
+                ->name('stock');
+
+            Route::get('/finance', [ReportController::class, 'finance'])
+                ->name('finance');
+
+            Route::get('/employee', [ReportController::class, 'employee'])
+                ->name('employee');
+
+            Route::get('/branch', fn () => view('reports.branch'))
+                ->name('branch');
+        });
+
+
 
     // Buat notifikasi sederhana untuk testing
     Route::get('/notifications', function () {

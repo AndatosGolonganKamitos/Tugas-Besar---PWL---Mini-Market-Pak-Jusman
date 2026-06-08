@@ -67,19 +67,22 @@ class TransactionController extends Controller
 
                     $transaction = Transaction::create([
 
-                    'invoice_number' => 'INV-' . time(),
+                        'invoice_number' => 'INV-' . time(),
 
-                    'user_id' => 1,
+                        'user_id' => auth()->id(),
 
-                    'subtotal' => $subtotal,
+                        'branch_id' => auth()->user()?->branch_id,
 
-                    'discount' => 0,
+                        'subtotal' => $subtotal,
 
-                    'total' => $subtotal,
+                        'discount' => 0,
 
-                    'status' => 'completed',
+                        'total' => $subtotal,
+
+                        'status' => 'completed',
 
                     ]);
+
 
                     foreach ($cart as $item) {
 

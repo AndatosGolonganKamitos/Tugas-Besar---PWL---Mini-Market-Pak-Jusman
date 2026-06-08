@@ -39,20 +39,99 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
-                {{-- TODO Backend: Loop $users — @forelse($users as $user) --}}
+
+                @forelse($users as $user)
+
                 <tr>
-                    <td colspan="6" class="px-6 py-12 text-center text-gray-400">
-                        <svg class="w-12 h-12 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/></svg>
-                        <p>Belum ada pengguna</p>
+
+                    <td class="px-6 py-4">
+                        {{ $user->name }}
                     </td>
+
+                    <td class="px-6 py-4">
+                        {{ $user->email }}
+                    </td>
+
+                    <td class="px-6 py-4">
+
+                        <span class="px-2 py-1 text-xs rounded-full bg-indigo-100 text-indigo-700">
+
+                            {{ ucfirst($user->role) }}
+
+                        </span>
+
+                    </td>
+
+                    <td class="px-6 py-4">
+                        {{ $user->branch->name ?? '-' }}
+                    </td>
+
+                    <td class="px-6 py-4">
+
+                        <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
+
+                            Aktif
+
+                        </span>
+
+                    </td>
+
+                    <td class="px-6 py-4 text-right">
+
+                        <div class="flex justify-end gap-3">
+
+                            <a href="{{ route('users.edit', $user->id) }}"
+                                class="text-indigo-600 hover:text-indigo-800">
+
+                                Edit
+
+                            </a>
+
+                            <form
+                                action="{{ route('users.destroy', $user->id) }}"
+                                method="POST">
+
+                                @csrf
+                                @method('DELETE')
+
+                                <button
+                                    type="submit"
+                                    onclick="return confirm('Hapus user ini?')"
+                                    class="text-red-500 hover:text-red-700">
+
+                                    Hapus
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </td>
+
                 </tr>
-                {{-- TODO Backend: @empty — tampilkan baris kosong --}}
-                {{-- @endforelse --}}
+
+                @empty
+
+                <tr>
+
+                    <td colspan="6"
+                        class="px-6 py-10 text-center text-gray-400">
+
+                        Belum ada pengguna
+
+                    </td>
+
+                </tr>
+
+                @endforelse
+
             </tbody>
+
 
         {{-- TODO Backend: Ganti 0 dengan count($users) --}}
         <div class="px-6 py-3 border-t border-gray-100 text-sm text-gray-500">
-            Total: 0 pengguna
+            Total: {{ $users->count() }} pengguna
         </div>
     </div>
 </x-app-layout>
