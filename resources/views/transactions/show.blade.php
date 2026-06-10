@@ -59,31 +59,30 @@
 
         </table>
 
-    </div>
-   
-    <div class="mb-4">
-        <button
-            onclick="window.print()"
-            class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-        >
-            Print Struk
-        </button>
-    </div>
+    <a href="{{ route('transactions.receipt', $transaction) }}"
+   target="_blank"
+   class="px-4 py-2 bg-green-600 text-white rounded">
+
+    Cetak Struk
+
+</a>
 
 
     <style>
-    @media print {
+@media print {
 
-        button {
-            display: none;
-        }
-
-        body {
-            background: white;
-        }
-
+    aside,
+    nav,
+    .no-print {
+        display: none !important;
     }
-    </style>
+
+    body {
+        background: white !important;
+    }
+
+}
+</style>
 
 
 </x-app-layout>

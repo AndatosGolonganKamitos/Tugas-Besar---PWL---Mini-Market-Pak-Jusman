@@ -5,13 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Models\User;
-
+use App\Models\Branch;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\SalesExport;
 
 class ReportController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Transaction::latest();
+        $query = Transaction::with('branch')
+        ->latest();
 
         if ($request->start_date) {
 
@@ -135,7 +138,26 @@ class ReportController extends Controller
         ));
     }
 
+    public function branch()
+    {
+        $branches = Branch::with([
+            'users',
+            'transactions'
+        ])->get();
 
+        return view(
+            'reports.branch',
+            compact('branches')
+        );
+    }
+
+    public function exportSales()
+    {
+        return Excel::download(
+            new SalesExport,
+            'laporan-penjualan.xlsx'
+        );
+    }
 
 
 }

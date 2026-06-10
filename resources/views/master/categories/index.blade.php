@@ -13,24 +13,26 @@
         <div class="p-4 border-b border-gray-100">
             <div class="flex gap-3">
                 <div class="relative flex-1 max-w-sm">
-                    <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    <input type="text" placeholder="Cari kategori..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Cari kategori..."
+                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm">
                 </div>
             </div>
-        </div>
 
-        <table class="w-full">
+            <table class="w-full">
             <thead>
                 <tr class="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     <th class="px-6 py-3">Kode</th>
                     <th class="px-6 py-3">Nama Kategori</th>
                     <th class="px-6 py-3">Deskripsi</th>
-                    <th class="px-6 py-3">Jumlah Produk</th>
+                    <th class="px-6 py-3">Total Stok</th>
                     <th class="px-6 py-3">Status</th>
                     <th class="px-6 py-3 text-right">Aksi</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100">
+            <tbody id="categoryTable" class="divide-y divide-gray-100">
 
                 @forelse($categories as $category)
 
@@ -49,7 +51,7 @@
                     </td>
 
                     <td class="px-6 py-4">
-                        0
+                        {{ $category->products->sum('stock') }}
                     </td>
 
                     <td class="px-6 py-4">
@@ -133,3 +135,27 @@
         </div>
     </div>
 </x-app-layout>
+<script>
+
+const searchInput = document.getElementById('searchInput');
+
+searchInput.addEventListener('input', function() {
+
+    const keyword = this.value.toLowerCase();
+
+    const rows = document.querySelectorAll('#categoryTable tr');
+
+    rows.forEach(row => {
+
+        const text = row.innerText.toLowerCase();
+
+        row.style.display =
+            text.includes(keyword)
+            ? ''
+            : 'none';
+
+    });
+
+});
+
+</script>

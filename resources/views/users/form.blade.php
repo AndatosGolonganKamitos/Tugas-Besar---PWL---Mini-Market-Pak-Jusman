@@ -66,6 +66,21 @@
 
                     </div>
 
+                    <div>
+                            <x-input-label for="phone" value="Nomor Telepon" />
+
+                            <x-text-input
+                                id="phone"
+                                name="phone"
+                                type="text"
+                                class="mt-1 block w-full"
+                                :value="old('phone', $user->phone ?? '')"
+                                placeholder="081234567890"
+                            />
+
+                            <x-input-error :messages="$errors->get('phone')" class="mt-2" />
+                        </div>
+
 
                     <div>
                         <x-input-label for="role" value="Role" />

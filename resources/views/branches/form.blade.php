@@ -108,19 +108,35 @@
                     </div>
 
                     <div>
-
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-
-                            Nama Manager
-
+                        <label class="block text-sm font-medium mb-2">
+                            Manager Cabang
                         </label>
 
-                        <input
-                            type="text"
+                        <select
                             name="manager_name"
-                            value="{{ old('manager_name', $branch->manager_name ?? '') }}"
                             class="w-full border border-gray-300 rounded-lg px-4 py-2">
 
+                            <option value="">
+                                Pilih Manager
+                            </option>
+
+                            @foreach($users as $user)
+
+                                @if(in_array($user->role, ['manager', 'supervisor']))
+
+                                    <option
+                                        value="{{ $user->name }}"
+                                        {{ old('manager_name', $branch->manager_name ?? '') == $user->name ? 'selected' : '' }}>
+
+                                        {{ $user->name }} ({{ ucfirst($user->role) }})
+
+                                    </option>
+
+                                @endif
+
+                            @endforeach
+
+                        </select>
                     </div>
 
                     <div>

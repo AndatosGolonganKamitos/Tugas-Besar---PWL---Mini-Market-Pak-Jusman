@@ -12,13 +12,32 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div class="p-4 border-b border-gray-100">
             <div class="flex gap-3">
-                <div class="relative flex-1 max-w-sm">
-                    <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    <input type="text" placeholder="Cari produk..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-indigo-500 focus:border-indigo-500">
-                </div>
-                <select class="border border-gray-300 rounded-lg text-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    name="search"
+                    placeholder="Cari produk..."
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                >
+
+                <select id="categoryFilter">
                     <option value="">Semua Kategori</option>
+
+                    @foreach($categories as $category)
+                        <option
+                            value="{{ $category->id }}"
+                            {{ request('category_id') == $category->id ? 'selected' : '' }}
+                        >
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
                 </select>
+
+                <button type="submit">
+                    Cari
+                </button>
+
             </div>
         </div>
 
@@ -61,8 +80,28 @@
                         </td>
 
                         <td class="px-6 py-4">
-                            {{ $product->stock }}
-                        </td>
+
+                        @if($product->stock == 0)
+
+                            <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700 font-semibold">
+                                Habis
+                            </span>
+
+                        @elseif($product->stock <= 20)
+
+                            <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700 font-semibold">
+                                Menipis ({{ $product->stock }})
+                            </span>
+
+                        @else
+
+                            <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700 font-semibold">
+                                {{ $product->stock }}
+                            </span>
+
+                        @endif
+
+                    </td>
 
                         <td class="px-6 py-4">
 
@@ -138,3 +177,60 @@
         </div>
     </div>
 </x-app-layout>
+<script>
+document.getElementById('searchInput').addEventListener('keyup', function () {
+
+    let keyword = this.value.toLowerCase();
+
+    let rows = document.querySelectorAll('tbody tr');
+
+    rows.forEach(function(row) {
+
+        let text = row.innerText.toLowerCase();
+
+        if (text.includes(keyword)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+
+    });
+
+});
+
+const categoryFilter = document.getElementById('categoryFilter');
+
+categoryFilter.addEventListener('change', filterProducts);
+
+searchInput.addEventListener('input', filterProducts);
+
+function filterProducts() {
+
+    const keyword = searchInput.value.toLowerCase();
+    const category = categoryFilter.value;
+
+    const rows = document.querySelectorAll('#productTable tr');
+
+    rows.forEach(row => {
+
+        const text = row.innerText.toLowerCase();
+
+        const rowCategory =
+            row.children[2]?.innerText.trim();
+
+        const matchSearch =
+            text.includes(keyword);
+
+        const matchCategory =
+            category === '' ||
+            rowCategory === category;
+
+        row.style.display =
+            matchSearch && matchCategory
+            ? ''
+            : 'none';
+
+    });
+}
+</script>
+

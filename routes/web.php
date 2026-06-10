@@ -132,6 +132,8 @@ Route::middleware('auth')->group(function () {
 
         Route::delete('/{branch}', [BranchController::class, 'destroy'])
             ->name('destroy');
+        Route::get('/{branch}', [BranchController::class, 'show'])
+            ->name('show');
     });
 
         // TODO Backend: Route::post('/', [BranchController::class, 'store'])->name('store');
@@ -184,43 +186,49 @@ Route::middleware('auth')->group(function () {
         ->name('history');
         Route::get('/{transaction}', [TransactionController::class, 'show'])
         ->name('show');
+        Route::get('/{transaction}/receipt', [TransactionController::class, 'receipt'])
+        ->name('receipt');
         // TODO Backend: Route::post('/pos', [TransactionController::class, 'store'])->name('store');
-    });
-
-    // ============================================================
-    // INVENTARIS (Akses: Owner, Manajer, Pegawai Gudang)
-    // TODO Backend: Buat InventoryController, model Inventory/Stock + migrasi
-    // ============================================================
-    Route::middleware('role:owner,manager,warehouse')->prefix('inventory')->name('inventory.')->group(function () {
-        Route::get('/', [InventoryController::class, 'index'])
-        ->name('index');
-        Route::get('/stock-opname', fn () => view('inventory.stock-opname'))->name('stock-opname');
-        // TODO Backend: Route::post('/stock-opname', [InventoryController::class, 'stockOpname'])->name('stock-opname.store');
-    });
-
-    // ============================================================
-    // LAPORAN (Akses: Owner, Manajer, Supervisor)
-    // TODO Backend: Buat ReportController
-    // ============================================================
-    Route::middleware('role:owner,manager,supervisor')->prefix('reports')->name('reports.')->group(function () {
-
-            Route::get('/', fn () => view('reports.index'))
+        });
+        
+        // ============================================================
+        // INVENTARIS (Akses: Owner, Manajer, Pegawai Gudang)
+        // TODO Backend: Buat InventoryController, model Inventory/Stock + migrasi
+        // ============================================================
+        Route::middleware('role:owner,manager,warehouse')->prefix('inventory')->name('inventory.')->group(function () {
+            Route::get('/', [InventoryController::class, 'index'])
+            ->name('index');
+            Route::get('/stock-opname', fn () => view('inventory.stock-opname'))->name('stock-opname');
+            // TODO Backend: Route::post('/stock-opname', [InventoryController::class, 'stockOpname'])->name('stock-opname.store');
+            });
+            
+            // ============================================================
+            // LAPORAN (Akses: Owner, Manajer, Supervisor)
+            // TODO Backend: Buat ReportController
+            // ============================================================
+            Route::middleware('role:owner,manager,supervisor')->prefix('reports')->name('reports.')->group(function () {
+                
+                Route::get('/', fn () => view('reports.index'))
                 ->name('index');
-
-            Route::get('/sales', [ReportController::class, 'index'])
+                
+                
+                
+                Route::get('/sales', [ReportController::class, 'index'])
                 ->name('sales');
-
-            Route::get('/stock', [ReportController::class, 'stock'])
+                
+                Route::get('/stock', [ReportController::class, 'stock'])
                 ->name('stock');
-
-            Route::get('/finance', [ReportController::class, 'finance'])
+                
+                Route::get('/finance', [ReportController::class, 'finance'])
                 ->name('finance');
-
-            Route::get('/employee', [ReportController::class, 'employee'])
+                
+                Route::get('/employee', [ReportController::class, 'employee'])
                 ->name('employee');
-
-            Route::get('/branch', fn () => view('reports.branch'))
+                
+                Route::get('/branch', [ReportController::class, 'branch'])
                 ->name('branch');
+                Route::get('/sales/export',[ReportController::class, 'exportSales'])
+                ->name('sales.export');
         });
 
 

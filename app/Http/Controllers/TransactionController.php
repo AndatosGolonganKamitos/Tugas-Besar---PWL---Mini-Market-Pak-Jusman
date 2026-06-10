@@ -23,6 +23,30 @@ class TransactionController extends Controller
     {
         $query = Transaction::latest();
 
+        if ($request->search) {
+
+    $query->where(function ($q) use ($request) {
+
+        $q->where(
+            'invoice_number',
+            'like',
+            '%' . $request->search . '%'
+        )
+
+        ->orWhereHas('user', function ($user) use ($request) {
+
+            $user->where(
+                'name',
+                'like',
+                '%' . $request->search . '%'
+            );
+
+        });
+
+    });
+
+}
+
         if ($request->start_date) {
 
             $query->whereDate(
@@ -145,6 +169,19 @@ class TransactionController extends Controller
         );
     }
 
+    public function receipt(Transaction $transaction)
+        {
+            $transaction->load([
+                'items.product',
+                'user',
+                'branch'
+            ]);
+
+            return view(
+                'transactions.receipt',
+                compact('transaction')
+            );
+        }
 
 
 }

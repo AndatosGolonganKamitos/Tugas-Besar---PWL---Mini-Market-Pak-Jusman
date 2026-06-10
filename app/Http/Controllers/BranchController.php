@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Branch;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class BranchController extends Controller
 {
@@ -15,9 +16,17 @@ class BranchController extends Controller
     }
 
     public function create()
-    {
-        return view('branches.form');
-    }
+        {
+            $users = User::whereIn('role', [
+                'manager',
+                'supervisor'
+            ])->get();
+
+            return view(
+                'branches.form',
+                compact('users')
+            );
+        }
 
     public function store(Request $request)
     {
@@ -36,9 +45,17 @@ class BranchController extends Controller
     }
 
     public function edit(Branch $branch)
-    {
-        return view('branches.form', compact('branch'));
-    }
+        {
+            $users = User::where('role', 'manager')->get();
+
+            return view(
+                'branches.form',
+                compact(
+                    'branch',
+                    'users'
+                )
+            );
+        }
 
     public function update(Request $request, Branch $branch)
     {
@@ -64,4 +81,30 @@ class BranchController extends Controller
             ->route('branches.index')
             ->with('success', 'Cabang berhasil dihapus');
     }
+
+  public function show(Branch $branch)
+        {
+            $branch->load([
+                'users',
+                'transactions.user'
+            ]);
+
+            $todayTransactions = $branch->transactions()
+                ->whereDate('created_at', today())
+                ->get();
+
+            $manager = $branch->users()
+                ->where('role', 'manager')
+                ->first();
+
+            return view('branches.show', [
+                'branch' => $branch,
+                'manager' => $manager,
+                'totalKaryawan' => $branch->users->count(),
+                'transaksiHariIni' => $todayTransactions->count(),
+                'pendapatanHariIni' => $todayTransactions->sum('total'),
+            ]);
+        }
+
+       
 }

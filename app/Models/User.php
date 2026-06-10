@@ -15,6 +15,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
         'role',
         'branch_id',
@@ -64,6 +65,8 @@ class User extends Authenticatable
     {
         return $this->role === 'warehouse';
     }
+
+    
 
     
 }

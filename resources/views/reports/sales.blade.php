@@ -3,7 +3,10 @@
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">Laporan Penjualan</h2>
             <div class="flex gap-2">
-                <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">Export Excel</button>
+               <a href="{{ route('reports.sales.export') }}"
+                class="px-4 py-2 bg-green-600 text-white rounded-lg">
+                    Export Excel
+                </a>
                 <button
                     onclick="window.print()"
                     class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
@@ -83,6 +86,7 @@
                     <tr class="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         <th class="px-6 py-3">Tanggal</th>
                         <th class="px-6 py-3">Cabang</th>
+                        <th class="px-6 py-3">Jumlah item</th>
                         <th class="px-6 py-3">Jumlah Transaksi</th>
                         <th class="px-6 py-3">Total Penjualan</th>
                         <th class="px-6 py-3">Rata-rata</th>
@@ -97,11 +101,14 @@
                             {{ $transaction->created_at->format('d M Y') }}
                         </td>
 
-                        <td class="px-6 py-4">
-                            Utama
+                        <td class="px-6 py-4">  
+                            {{ $transaction->branch->name ?? '-' }}
                         </td>
 
                         <td class="px-6 py-4">
+                            {{ $transaction->items->count() }}
+                        </td>
+                        <td class="px-6 py-4">  
                             1
                         </td>
 

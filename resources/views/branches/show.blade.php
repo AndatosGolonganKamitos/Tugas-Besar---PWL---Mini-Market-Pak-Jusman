@@ -18,15 +18,21 @@
                 <h3 class="font-semibold text-gray-900 mb-4">Ringkasan</h3>
                 <div class="grid grid-cols-3 gap-4">
                     <div class="p-3 bg-gray-50 rounded-lg text-center">
-                        <p class="text-2xl font-bold text-gray-900">0</p>
+                        <p class="text-2xl font-bold text-gray-900">
+                            {{ $totalKaryawan }}
+                        </p>
                         <p class="text-xs text-gray-500">Karyawan</p>
                     </div>
                     <div class="p-3 bg-gray-50 rounded-lg text-center">
-                        <p class="text-2xl font-bold text-gray-900">0</p>
+                        <p class="text-2xl font-bold text-gray-900">
+                            {{ $transaksiHariIni }}
+                        </p>
                         <p class="text-xs text-gray-500">Transaksi Hari Ini</p>
                     </div>
                     <div class="p-3 bg-gray-50 rounded-lg text-center">
-                        <p class="text-2xl font-bold text-gray-900">Rp 0</p>
+                        <p class="text-2xl font-bold text-gray-900">
+                            Rp {{ number_format($pendapatanHariIni) }}
+                        </p>
                         <p class="text-xs text-gray-500">Pendapatan Hari Ini</p>
                     </div>
                 </div>
@@ -34,9 +40,41 @@
 
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                 <h3 class="font-semibold text-gray-900 mb-4">Transaksi Terbaru</h3>
-                <div class="text-center py-8 text-gray-400">
-                    <p>Belum ada transaksi</p>
-                </div>
+                @forelse($branch->transactions->take(5) as $transaction)
+
+                    <div class="flex justify-between py-3 border-b">
+
+                        <div>
+                            <p class="font-medium">
+                                {{ $transaction->invoice_number }}
+                            </p>
+
+                            <p class="text-xs text-gray-500">
+                                {{ $transaction->created_at->format('d M Y H:i') }}
+                            </p>
+                        </div>
+
+                        <div class="text-right">
+
+                            <p class="font-semibold">
+                                Rp {{ number_format($transaction->total,0,',','.') }}
+                            </p>
+
+                            <p class="text-xs text-gray-500">
+                                {{ $transaction->user->name ?? '-' }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    @empty
+
+                    <p class="text-center text-gray-400">
+                        Belum ada transaksi
+                    </p>
+
+                    @endforelse
             </div>
         </div>
 
@@ -46,15 +84,15 @@
                 <dl class="space-y-3 text-sm">
                     <div class="flex justify-between">
                         <dt class="text-gray-500">Manajer</dt>
-                        <dd class="font-medium text-gray-900">{{ $branch->manager_name ?? '—' }}</dd>
+                        <dd class="font-medium text-gray-900">{{ $manager->name  ?? '—' }}</dd>
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-gray-500">Telepon</dt>
-                        <dd class="font-medium text-gray-900">{{ $branch->phone ?? '—' }}</dd>
+                        <dd class="font-medium text-gray-900">{{ $manager->phone ?? '—' }}</dd>
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-gray-500">Email</dt>
-                        <dd class="font-medium text-gray-900">{{ $branch->email ?? '—' }}</dd>
+                        <dd class="font-medium text-gray-900">{{ $manager->email ?? '—' }}</dd>
                     </div>
                     <div class="flex justify-between">
                         <dt class="text-gray-500">Status</dt>
@@ -65,9 +103,31 @@
 
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                 <h3 class="font-semibold text-gray-900 mb-4">Karyawan</h3>
-                <div class="text-center py-4 text-gray-400 text-sm">
-                    <p>Belum ada karyawan</p>
-                </div>
+                @forelse($branch->users as $user)
+
+                    <div class="flex justify-between py-2 border-b">
+                        <div>
+                            <p class="font-medium">
+                                {{ $user->name }}
+                            </p>
+
+                            <p class="text-xs text-gray-500">
+                                {{ ucfirst($user->role) }}
+                            </p>
+                        </div>
+
+                        <span class="text-sm text-gray-500">
+                            {{ $user->email }}
+                        </span>
+                    </div>
+
+                    @empty
+
+                    <p class="text-center text-gray-400">
+                        Belum ada karyawan
+                    </p>
+
+                    @endforelse
             </div>
         </div>
     </div>

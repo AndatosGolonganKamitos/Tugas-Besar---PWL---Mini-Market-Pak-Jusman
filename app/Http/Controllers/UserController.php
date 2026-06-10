@@ -33,6 +33,7 @@ class UserController extends Controller
     'password' => 'required|min:6|confirmed',
     'role' => 'required',
     'branch_id' => 'nullable|exists:branches,id',
+    'phone' => 'nullable|string|max:20',
 
     ]);
 
@@ -42,6 +43,7 @@ class UserController extends Controller
     'email' => $request->email,
     'role' => $request->role,
     'branch_id' => $request->branch_id,
+    'phone' => $request->phone,
 
     'password' => Hash::make($request->password),
 
@@ -76,7 +78,7 @@ class UserController extends Controller
 
             'role' => 'required',
             'branch_id' => 'nullable|exists:branches,id',
-
+            'phone' => 'nullable|string|max:20',
         ]);
 
         $data = [
@@ -84,6 +86,7 @@ class UserController extends Controller
     'name' => $request->name,
     'email' => $request->email,
     'role' => $request->role,
+    'phone' => $request->phone,
     'branch_id' => $request->branch_id,
     'is_active' => $request->is_active ?? 1,
 
