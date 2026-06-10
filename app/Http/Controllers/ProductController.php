@@ -54,6 +54,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        dd($request->hasFile('image'));
         $request->validate([
             'code' => 'required|unique:products',
             'name' => 'required',
@@ -65,16 +66,19 @@ class ProductController extends Controller
             'supplier_id' => 'nullable',
             'min_stock' => 'required|numeric',
             'unit' => 'required',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'is_active' => 'required',
         ]);
 
-        $image = null;
 
-if ($request->hasFile('image')) {
+    $image = null;
 
-    $image = $request->file('image')
-        ->store('products', 'public');
-}
+    if ($request->hasFile('image')) {
+
+        $image = $request->file('image')
+            ->store('products', 'public');
+    }
+
         Product::create([
             'code' => $request->code,
             'name' => $request->name,
@@ -134,10 +138,11 @@ if ($request->hasFile('image')) {
             'supplier_id' => 'nullable',
             'min_stock' => 'required|numeric',
             'unit' => 'required',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'is_active' => 'required',
         ]);
 
-        $product->update([
+        $data = [
             'code' => $request->code,
             'name' => $request->name,
             'category_id' => $request->category_id,
@@ -149,7 +154,15 @@ if ($request->hasFile('image')) {
             'supplier_id' => $request->supplier_id,
             'min_stock' => $request->min_stock,
             'unit' => $request->unit,
-        ]);
+        ];
+
+        if ($request->hasFile('image')) {
+
+            $data['image'] = $request->file('image')
+                ->store('products', 'public');
+        }
+
+        $product->update($data);
 
         return redirect()
             ->route('master.products.index')

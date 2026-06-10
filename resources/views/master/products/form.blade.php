@@ -101,6 +101,25 @@
                             <option value="box" {{ (old('unit', $product->unit ?? '') == 'box') ? 'selected' : '' }}>Box</option>
                         </select>
                         <x-input-error :messages="$errors->get('unit')" class="mt-2" />
+                            
+                            <div>
+                                <label class="block text-sm font-medium mb-1">
+                                    Foto Produk
+                                </label>
+                
+                                <input
+                                    type="file"
+                                    name="image"
+                                    class="w-full border rounded-lg px-3 py-2"
+                                >
+                                @if(isset($product) && $product->image)
+                                    <img
+                                        src="{{ asset('storage/' . $product->image) }}"
+                                        class="w-32 mt-3 rounded-lg"
+                                    >
+                                @endif
+                
+                            </div>
                     </div>
                 </div>
             <div class="md:col-span-2">
@@ -125,28 +144,6 @@
                         {{ isset($product) ? 'Simpan Perubahan' : 'Simpan' }}
                     </button>
                 </div>
-
-                <div>
-
-                    <label class="block text-sm font-medium mb-1">
-                        Foto Produk
-                    </label>
-
-                    <input
-                        type="file"
-                        name="image"
-                        class="w-full border rounded-lg px-3 py-2"
-                    >
-                    @if(isset($product) && $product->image)
-                        <img
-                            src="{{ asset('storage/' . $product->image) }}"
-                            class="w-32 mt-3 rounded-lg"
-                        >
-                    @endif
-
-                </div>
-
-
 
             </form>
         </div>
