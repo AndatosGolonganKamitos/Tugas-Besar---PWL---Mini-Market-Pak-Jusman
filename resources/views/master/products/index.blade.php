@@ -8,7 +8,6 @@
             </a>
         </div>
     </x-slot>
-
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div class="p-4 border-b border-gray-100">
             <div class="flex gap-3">
@@ -20,24 +19,7 @@
                     placeholder="Cari produk..."
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 >
-
-                <select id="categoryFilter">
-                    <option value="">Semua Kategori</option>
-
-                    @foreach($categories as $category)
-                        <option
-                            value="{{ $category->id }}"
-                            {{ request('category_id') == $category->id ? 'selected' : '' }}
-                        >
-                            {{ $category->name }}
-                        </option>
-                    @endforeach
-                </select>
-
-                <button type="submit">
-                    Cari
-                </button>
-
+                
             </div>
         </div>
 
@@ -56,9 +38,7 @@
             </thead>
             <tbody class="divide-y divide-gray-100">
                     @forelse($products as $product)
-
                     <tr>
-
                         <td class="px-6 py-4">
                             {{ $product->code }}
                         </td>
@@ -81,102 +61,87 @@
 
                         <td class="px-6 py-4">
 
-                        @if($product->stock == 0)
+                       @php
+                            $user = auth()->user();
+                            if ($user->role == 'owner') {
+                                $stock = $product->stocks->sum('stock');
+                            } else {
+                                $stock = $product->stocks
+                                    ->where(
+                                        'branch_id',
+                                        $user->branch_id
+                                    )->sum('stock');
+                            }
+
+                    @endphp
+
+                        @if($stock == 0)
 
                             <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700 font-semibold">
                                 Habis
                             </span>
 
-                        @elseif($product->stock <= 20)
+                        @elseif($stock <= 20)
 
                             <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700 font-semibold">
-                                Menipis ({{ $product->stock }})
+                                Menipis ({{ $stock }})
                             </span>
 
                         @else
 
                             <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700 font-semibold">
-                                {{ $product->stock }}
+                                {{ $stock }}
                             </span>
 
                         @endif
-
                     </td>
-
                         <td class="px-6 py-4">
-
                             @if($product->is_active)
-
                                 <span class="text-green-600 font-semibold">
                                     Aktif
                                 </span>
-
                             @else
-
                                 <span class="text-red-600 font-semibold">
                                     Nonaktif
                                 </span>
-
                             @endif
-
                         </td>
-
                         <td class="px-6 py-4 text-right">
-
                             <div class="flex justify-end gap-2">
-
                                 <a href="{{ route('master.products.edit', $product) }}"
                                     class="px-3 py-1 bg-yellow-500 text-white text-sm rounded hover:bg-yellow-600">
-
                                     Edit
-
                                 </a>
-
                                 <form action="{{ route('master.products.destroy', $product) }}"
                                     method="POST"
                                     onsubmit="return confirm('Yakin ingin menghapus produk ini?')">
-
                                     @csrf
                                     @method('DELETE')
-
                                     <button type="submit"
                                         class="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600">
-
                                         Hapus
-
                                     </button>
-
                                 </form>
-
                             </div>
-
                         </td>
-
                     </tr>
-
                     @empty
-
                     <tr>
-
                         <td colspan="8"
                             class="px-6 py-12 text-center text-gray-400">
-
                             Belum ada produk
-
                         </td>
-
                     </tr>
-
                     @endforelse
-
                 </tbody>
         </table>
-
         <div class="px-6 py-3 border-t border-gray-100 text-sm text-gray-500">
             Total: {{ count($products) }} produk
         </div>
     </div>
 </x-app-layout>
+
+
 <script>
 document.getElementById('searchInput').addEventListener('keyup', function () {
 

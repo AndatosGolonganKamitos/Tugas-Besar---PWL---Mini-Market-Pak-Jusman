@@ -12,27 +12,40 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
-        {
-            $query = Product::with('category');
+    public function index()
+{
+    $user = auth()->user();
 
-            if ($request->search) {
-                $query->where('name', 'like', '%' . $request->search . '%');
-            }
+    $query = Product::with([
+        'category',
+        'stocks'
+    ]);
 
-            if ($request->category_id) {
-                $query->where('category_id', $request->category_id);
-            }
+    if ($user->role != 'owner') {
 
-            $products = $query->latest()->get();
+        $query->whereHas('stocks', function ($q) use ($user) {
 
-            $categories = Category::all();
+            $q->where(
+                'branch_id',
+                $user->branch_id
+            );
 
-            return view('master.products.index', compact(
-                'products',
-                'categories'
-            ));
-        }
+        });
+
+    }
+
+    $products = $query->get();
+
+    $categories = Category::all();
+
+    return view(
+        'master.products.index',
+        compact(
+            'products',
+            'categories'
+        )
+    );
+}
 
     /**
      * Show the form for creating a new resource.
@@ -54,7 +67,6 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->hasFile('image'));
         $request->validate([
             'code' => 'required|unique:products',
             'name' => 'required',

@@ -5,7 +5,6 @@
         </h2>
     </x-slot>
 
-    {{-- TODO Backend: Ganti angka placeholder (Rp 0, 0) dengan data real dari controller --}}
     {{-- Stats Cards --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
@@ -15,7 +14,7 @@
                 </div>
                 <div>
                     <p class="text-sm text-gray-500">Penjualan Hari Ini</p>
-                    <p class="text-2xl font-bold text-gray-900">Rp {{ $penjualanHariIni ?? 0 }}</p>
+                    <p class="text-2xl font-bold text-gray-900">Rp {{ number_format($penjualanHariIni ?? 0,0,',','.') }}</p>
                 </div>
             </div>
         </div>
@@ -32,12 +31,13 @@
             </div>
         </div>
 
+        @if(auth()->user()->role == 'owner')
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-lg bg-amber-100 flex items-center justify-center">
                     <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                 </div>
-                <div>
+                <div>   
                     <p class="text-sm text-gray-500">Total Cabang</p>
 
                     <p class="text-2xl font-bold text-gray-900">
@@ -46,6 +46,7 @@
                 </div>
             </div>
         </div>
+        @endif
         
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
             <div class="flex items-center gap-4">
@@ -91,7 +92,6 @@
             </div>
         </div>
 
-        {{-- TODO Backend: Looping data stok menipis dari $stokMenipis --}}
         {{-- Stock Alerts --}}
         <div class="bg-white rounded-xl shadow-sm border border-gray-200">
             <div class="px-5 py-4 border-b border-gray-100">
@@ -100,13 +100,45 @@
             <div class="p-5">
                 @forelse($stokMenipis ?? [] as $item)
                 {{-- TODO Backend: Tampilkan produk yg stoknya di bawah minimal --}}
-                <div class="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
-                    <div>
-                        <p class="text-sm font-medium text-gray-900">{{ $item->product_name ?? '-' }}</p>
-                        <p class="text-xs text-gray-400">Stok: {{ $item->stock ?? 0 }} (Min: {{ $item->min_stock ?? 0 }})</p>
-                    </div>
-                    <span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-700">{{ $item->stock ?? 0 }} tersisa</span>
-                </div>
+                <div class="flex items-center justify-between py-3 border-b border-gray-50 last:border-0">
+
+    <div>
+
+        <p class="text-sm font-semibold text-gray-900">
+            {{ $item->product?->name ?? 'Produk Hilang' }}
+        </p>    
+
+        <div class="flex items-center gap-2 mt-1">
+
+            <span class="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">
+                {{ $item->branch?->name ?? 'Cabang Hilang' }}
+            </span>
+
+        </div>
+
+        <p class="text-xs text-gray-500 mt-1">
+
+            Stok :
+            <span class="font-semibold text-red-600">
+                {{ $item->stock }}
+            </span>
+
+            |
+
+            Minimal :
+            {{ $item->product->min_stock }}
+
+        </p>
+
+    </div>
+
+    <span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-700">
+
+        Menipis
+
+    </span>
+
+</div>
                 @empty
                 <div class="text-center py-8 text-gray-400">
                     <svg class="w-12 h-12 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>

@@ -6,46 +6,66 @@ use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Branch;
-
+use App\Models\ProductStock;
 
 class DashboardController extends Controller
 {
-public function index()
-{
-    $penjualanHariIni = Transaction::whereDate(
-        'created_at',
-        today()
-    )->sum('total');    
+    public function index()
+    {
+    $user = auth()->user();
 
-    $totalTransaksi = Transaction::count();
+    $transactionQuery = Transaction::query();
+    $stockQuery = ProductStock::with('product');
+    $userQuery = User::query();
 
-    $totalProduk = Product::count();
+    if ($user->role != 'owner') {
 
-    $totalPelanggan = 0;
+        $transactionQuery->where(
+            'branch_id',
+            $user->branch_id
+        );
 
-    $totalUser = User::count();
+        $stockQuery->where(
+            'branch_id',
+            $user->branch_id
+        );
 
-    $totalCabang = Branch::count();
+        $userQuery->where(
+            'branch_id',
+            $user->branch_id
+        );
+    }
 
-    $transaksiTerbaru = Transaction::latest()
-        ->take(5)
-        ->get();
+        $todaySales = (clone $transactionQuery)
+            ->whereDate('created_at', today())
+            ->sum('total');
 
-    $stokMenipis = Product::whereColumn(
-        'stock',
-        '<=',
-        'min_stock'
-    )->get();
+        $totalTransactions = (clone $transactionQuery)
+            ->count();
 
-    return view('dashboard', compact(
-    'penjualanHariIni',
-    'totalTransaksi',
-    'totalProduk',
-    'totalUser',
-    'totalCabang',
-    'transaksiTerbaru',
-    'stokMenipis'
-));
+        $latestTransactions = (clone $transactionQuery)
+            ->latest()
+            ->take(5)
+            ->get();
+
+        $lowStocks = $stockQuery
+        ->get()
+        ->filter(function ($stock) {
+            return $stock->stock <= $stock->product->min_stock;
+        });
+
+        $totalUsers = $userQuery->count();
+
+        $totalBranches = Branch::count();
+
+        return view('dashboard', [
+        'penjualanHariIni' => $todaySales,
+        'totalTransaksi' => $totalTransactions,
+        'transaksiTerbaru' => $latestTransactions,
+        'stokMenipis' => $lowStocks,
+        'totalUser' => $totalUsers,
+        'totalCabang' => $totalBranches,
+        ]);
+    }
 }
-
-}
+     

@@ -10,7 +10,25 @@ class BranchController extends Controller
 {
     public function index()
     {
-        $branches = Branch::latest()->get();
+        $user = auth()->user();
+
+        if ($user->role == 'owner') {
+
+            $branches = Branch::with([
+                'users',
+                'transactions'
+            ])->get();
+
+        } else {
+
+            $branches = Branch::with([
+                'users',
+                'transactions'
+            ])
+            ->where('id', $user->branch_id)
+            ->get();
+
+        }
 
         return view('branches.index', compact('branches'));
     }
@@ -29,41 +47,47 @@ class BranchController extends Controller
         }
 
     public function store(Request $request)
-    {
-        $request->validate([
+        {
+            $request->validate([
 
-            'code' => 'required|unique:branches,code',
-            'name' => 'required',
+                'code' => 'required|unique:branches,code',
+                'name' => 'required',
 
-        ]);
+            ]);
 
-        Branch::create($request->all());
+            Branch::create($request->all());
 
-        return redirect()
-            ->route('branches.index')
-            ->with('success', 'Cabang berhasil ditambahkan');
-    }
+            return redirect()
+                ->route('branches.index')
+                ->with('success', 'Cabang berhasil ditambahkan');
+        }
 
     public function edit(Branch $branch)
-        {
-            $users = User::where('role', 'manager')->get();
-
-            return view(
-                'branches.form',
-                compact(
-                    'branch',
-                    'users'
-                )
-            );
+    {
+        if (auth()->user()->role != 'owner') {
+            abort(403);
         }
+
+        $users = User::where('role', 'manager')->get();
+
+        return view(
+            'branches.form',
+            compact(
+                'branch',
+                'users'
+            )
+        );
+    }
 
     public function update(Request $request, Branch $branch)
     {
-        $request->validate([
+        if (auth()->user()->role != 'owner') {
+            abort(403);
+        }
 
+        $request->validate([
             'code' => 'required|unique:branches,code,' . $branch->id,
             'name' => 'required',
-
         ]);
 
         $branch->update($request->all());
@@ -75,6 +99,10 @@ class BranchController extends Controller
 
     public function destroy(Branch $branch)
     {
+        if (auth()->user()->role != 'owner') {
+            abort(403);
+        }
+
         $branch->delete();
 
         return redirect()
@@ -82,29 +110,38 @@ class BranchController extends Controller
             ->with('success', 'Cabang berhasil dihapus');
     }
 
-  public function show(Branch $branch)
-        {
-            $branch->load([
-                'users',
-                'transactions.user'
-            ]);
+    public function show(Branch $branch)
+    {
+        $user = auth()->user();
 
-            $todayTransactions = $branch->transactions()
-                ->whereDate('created_at', today())
-                ->get();
+        // selain owner hanya boleh lihat cabangnya sendiri
+        if ($user->role != 'owner' && $user->branch_id != $branch->id) {
 
-            $manager = $branch->users()
-                ->where('role', 'manager')
-                ->first();
+            abort(403, 'Akses ditolak');
 
-            return view('branches.show', [
-                'branch' => $branch,
-                'manager' => $manager,
-                'totalKaryawan' => $branch->users->count(),
-                'transaksiHariIni' => $todayTransactions->count(),
-                'pendapatanHariIni' => $todayTransactions->sum('total'),
-            ]);
         }
+
+        $branch->load([
+            'users',
+            'transactions.user'
+        ]);
+
+        $todayTransactions = $branch->transactions()
+            ->whereDate('created_at', today())
+            ->get();
+
+        $manager = $branch->users()
+            ->where('role', 'manager')
+            ->first();
+
+        return view('branches.show', [
+            'branch' => $branch,
+            'manager' => $manager,
+            'totalKaryawan' => $branch->users->count(),
+            'transaksiHariIni' => $todayTransactions->count(),
+            'pendapatanHariIni' => $todayTransactions->sum('total'),
+        ]);
+    }
 
        
 }

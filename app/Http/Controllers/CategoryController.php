@@ -12,7 +12,9 @@ class CategoryController extends Controller
      */
     public function index()
 {
-    $categories = Category::with('products')->latest()->get();
+    $categories = Category::with('products.stocks')
+    ->latest()
+    ->get();
 
     return view('master.categories.index', compact('categories'));
 }

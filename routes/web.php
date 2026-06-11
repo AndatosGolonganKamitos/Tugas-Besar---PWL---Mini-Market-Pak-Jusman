@@ -196,11 +196,19 @@ Route::middleware('auth')->group(function () {
         // TODO Backend: Buat InventoryController, model Inventory/Stock + migrasi
         // ============================================================
         Route::middleware('role:owner,manager,warehouse')->prefix('inventory')->name('inventory.')->group(function () {
-            Route::get('/', [InventoryController::class, 'index'])
-            ->name('index');
-            Route::get('/stock-opname', fn () => view('inventory.stock-opname'))->name('stock-opname');
-            // TODO Backend: Route::post('/stock-opname', [InventoryController::class, 'stockOpname'])->name('stock-opname.store');
-            });
+
+        Route::get('/', [InventoryController::class, 'index'])
+        ->name('index');
+        Route::get('/stock-opname',[InventoryController::class, 'stockOpname'])
+        ->name('stock-opname');
+        Route::post('/stock-opname',[InventoryController::class, 'saveOpname'])
+        ->name('stock-opname.save');
+        Route::get('/stock-in', [InventoryController::class, 'stockIn'])
+        ->name('stock-in');
+        Route::post('/stock-in', [InventoryController::class, 'storeStockIn'])
+        ->name('stock-in.store');
+
+    });
             
             // ============================================================
             // LAPORAN (Akses: Owner, Manajer, Supervisor)

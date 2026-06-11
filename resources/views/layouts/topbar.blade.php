@@ -7,13 +7,24 @@
 
     <div class="flex-1"></div>
 
-    <div class="flex items-center gap-4">
-        <span class="text-sm text-gray-500 hidden sm:block">
-            {{ Auth::user()->name }}
-            <span class="ml-2 px-2 py-0.5 text-xs rounded-full bg-indigo-100 text-indigo-700 font-medium">
+            <div class="flex items-center gap-4">
+                <div class="hidden sm:flex items-center gap-2 text-sm text-gray-500">
+
+            <span>
+                {{ Auth::user()->name }}
+            </span>
+
+            <span class="px-2 py-0.5 text-xs rounded-full bg-indigo-100 text-indigo-700 font-medium">
                 {{ Auth::user()->role ?? 'Staff' }}
             </span>
-        </span>
+
+            @if(Auth::user()->branch)
+                <span class="px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-700 font-medium">
+                    {{ Auth::user()->branch->name }}
+                </span>
+            @endif
+
+        </div>
 
         {{-- Logout --}}
         <form method="POST" action="{{ route('logout') }}" class="inline">

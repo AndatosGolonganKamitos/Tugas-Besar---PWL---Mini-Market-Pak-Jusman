@@ -6,17 +6,24 @@
         </h2>
     </x-slot>
     
-        <div class="grid grid-cols-4 gap-4 mb-6">
+        <div class="grid grid-cols-5 gap-4 mb-6">
     
         <div class="bg-blue-50 p-4 rounded-lg">
             <p class="text-sm text-gray-500">Total Karyawan</p>
-            <p class="text-2xl font-bold">{{ $totalKaryawan }}</p>
+            <p class="text-2xl font-extrabold">{{ $totalKaryawan }}</p>
         </div>
     
         <div class="bg-green-50 p-4 rounded-lg">
             <p class="text-sm text-gray-500">Kasir</p>
             <p class="text-2xl font-bold">
                 {{ $employees->where('role','cashier')->count() }}
+            </p>
+        </div>
+        
+        <div class="bg-blue-400  p-4 rounded-lg">
+            <p class="text-sm text-gray-500">Warehouse</p>
+            <p class="text-2xl font-bold">
+                {{ $employees->where('role','warehouse')->count() }}
             </p>
         </div>
     
@@ -57,56 +64,37 @@
         @foreach($employees as $employee)
 
         <tr class="border-b hover:bg-gray-50">
-
             <td class="py-3 px-2">
                 {{ $employee->name }}
             </td>
-
             <td class="py-3 px-2">
                 {{ $employee->email }}
             </td>
-
             <td class="py-3 px-2">
                 {{ ucfirst($employee->role) }}
             </td>
-
             <td class="py-3 px-2">
                 {{ $employee->branch->name ?? '-' }}
             </td>
-
             <td class="py-3 px-2">
                 {{ $employee->phone ?? '-' }}
             </td>
-
             <td class="py-3 px-2">
-
                 @if($employee->is_active)
-
                     <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
                         Aktif
                     </span>
-
                 @else
-
                     <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700">
                         Nonaktif
                     </span>
-
                 @endif
-
             </td>
-
             <td class="py-3 px-2">
                 {{ $employee->created_at->format('d M Y') }}
             </td>
-
         </tr>
-
         @endforeach
-
     </tbody>
-
 </table>
-
-
 </x-app-layout>

@@ -51,7 +51,11 @@
                     </td>
 
                     <td class="px-6 py-4">
-                        {{ $category->products->sum('stock') }}
+                        {{
+                            $category->products->sum(function ($product) {
+                                return $product->stocks->sum('stock');
+                            })
+                        }}
                     </td>
 
                     <td class="px-6 py-4">

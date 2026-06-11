@@ -38,19 +38,9 @@
                         class="border border-gray-300 rounded-lg text-sm px-3 py-2"
                     >
 
-                    <button
-                        class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm"
-                    >
-                        Filter
-                    </button>
-
+                    
                 </form>
-                <select class="border border-gray-300 rounded-lg text-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
-                    <option value="">Semua Status</option>
-                    <option value="completed">Selesai</option>
-                    <option value="pending">Menunggu</option>
-                    <option value="cancelled">Dibatalkan</option>
-                </select>
+               
             </div>
         </div>
 

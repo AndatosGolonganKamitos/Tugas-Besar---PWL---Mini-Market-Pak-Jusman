@@ -130,6 +130,23 @@
             {{-- TODO Backend: Ganti dengan loop data produk $products — @foreach($products as $product) --}}
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
 @forelse($products as $product)
+                @php
+
+                if(auth()->user()->role === 'owner') {
+
+                    $stockCabang = $product->stocks->sum('stock');
+
+                } else {
+
+                    $stockCabang = optional(
+                        $product->stocks
+                            ->where('branch_id', auth()->user()->branch_id)
+                            ->first()
+                    )->stock ?? 0;
+
+                }
+
+                @endphp
 
 <div
 x-show="
@@ -156,7 +173,7 @@ x-show="
 
         let qtyInCart = cartItem ? cartItem.qty : 0;
 
-        if (qtyInCart < {{ $product->stock }}) {
+        if (qtyInCart < {{ $stockCabang }}) {
 
             addToCart({
                 id: {{ $product->id }},
@@ -172,7 +189,7 @@ x-show="
 
         class="bg-white rounded-xl shadow-sm border border-gray-200 p-3 transition
 
-        {{ $product->stock <= 0
+        {{ $stockCabang  <= 0
             ? 'opacity-50 cursor-not-allowed'
             : 'hover:border-indigo-300 hover:shadow cursor-pointer' }}"
 
@@ -214,13 +231,13 @@ x-show="
         </p>
 
         <p class="text-xs mt-1
-            {{ $product->stock < 5
+            {{ $stockCabang < 5
                 ? 'text-red-500 font-semibold'
                 : 'text-gray-400' }}">
 
-            Stok: {{ $product->stock }}
+            Stok: {{ $stockCabang }}
 
-            @if($product->stock < 5)
+            @if($stockCabang < 5)
 
                 ⚠ Hampir habis
 
@@ -242,10 +259,7 @@ x-show="
 <div class="col-span-full text-center py-10 text-gray-400">
     Tidak ada produk
 </div>
-
 @endforelse
-
-
             </div>
         {{-- Cart Panel --}}
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col" style="max-height: calc(100vh - 12rem);">
@@ -270,13 +284,10 @@ x-show="
                                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/>
 
                         </svg>
-
                         <p>Keranjang kosong</p>
-
                         <p class="text-xs mt-1">
                             Pilih produk untuk memulai transaksi
                         </p>
-
                     </div>
 
                 </template>
@@ -285,14 +296,10 @@ x-show="
                     <div class="border rounded-lg p-3">
 
                         <div class="flex justify-between items-start gap-2">
-
                             <div>
-
                                 <p class="font-medium text-sm"
                                     x-text="item.name"></p>
-
                                 <p class="text-xs text-gray-400 mt-1">
-
                                     Qty:
                                     <div class="flex items-center gap-2 mt-1">
                                     <button
@@ -313,11 +320,8 @@ x-show="
                                         +
                                     </button>
                                 </div>
-
                                 </p>
-
                             </div>
-
                             <div class="text-right">
 
                                 <p class="font-semibold text-indigo-600">

@@ -7,71 +7,86 @@ use App\Models\Transaction;
 use App\Models\TransactionItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\ProductStock;
 
 class TransactionController extends Controller
 {
     public function pos()
     {
-        $products = Product::where('is_active', 1)
-            ->latest()
-            ->get();
+        $products = Product::with('stocks')
+    ->where('is_active', 1)
+    ->latest()
+    ->get();
 
         return view('transactions.pos', compact('products'));
     }
 
     public function index(Request $request)
-    {
-        $query = Transaction::latest();
+{
+    $user = auth()->user();
 
-        if ($request->search) {
+    $query = Transaction::with([
+        'user',
+        'branch'
+    ])
+    ->latest();
 
-    $query->where(function ($q) use ($request) {
+    if ($user->role != 'owner') {
 
-        $q->where(
-            'invoice_number',
-            'like',
-            '%' . $request->search . '%'
-        )
-
-        ->orWhereHas('user', function ($user) use ($request) {
-
-            $user->where(
-                'name',
-                'like',
-                '%' . $request->search . '%'
-            );
-
-        });
-
-    });
-
-}
-
-        if ($request->start_date) {
-
-            $query->whereDate(
-                'created_at',
-                '>=',
-                $request->start_date
-            );
-        }
-
-        if ($request->end_date) {
-
-            $query->whereDate(
-                'created_at',
-                '<=',
-                $request->end_date
-            );
-        }
-
-        $transactions = $query->get();
-
-        return view(
-            'transactions.index',
-            compact('transactions')
+        $query->where(
+            'branch_id',
+            $user->branch_id
         );
     }
+
+    if ($request->search) {
+
+        $query->where(function ($q) use ($request) {
+
+            $q->where(
+                'invoice_number',
+                'like',
+                '%' . $request->search . '%'
+            )
+
+            ->orWhereHas('user', function ($user) use ($request) {
+
+                $user->where(
+                    'name',
+                    'like',
+                    '%' . $request->search . '%'
+                );
+
+            });
+
+        });
+    }
+
+    if ($request->start_date) {
+
+        $query->whereDate(
+            'created_at',
+            '>=',
+            $request->start_date
+        );
+    }
+
+    if ($request->end_date) {
+
+        $query->whereDate(
+            'created_at',
+            '<=',
+            $request->end_date
+        );
+    }
+
+    $transactions = $query->get();
+
+    return view(
+        'transactions.index',
+        compact('transactions')
+    );
+}
 
 
 
@@ -110,15 +125,23 @@ class TransactionController extends Controller
 
                     foreach ($cart as $item) {
 
-                    $product = Product::find($item['id']);
+                    $stock = ProductStock::where(
+                        'product_id',
+                        $item['id']
+                    )
+                    ->where(
+                        'branch_id',
+                        auth()->user()->branch_id
+                    )
+                    ->first();
 
-                    if ($product->stock < $item['qty']) {
+                    if (!$stock || $stock->stock < $item['qty']) {
 
                         DB::rollback();
 
                         return response()->json([
                             'success' => false,
-                            'message' => 'Stok tidak cukup'
+                            'message' => 'Stok cabang tidak cukup'
                         ], 400);
                     }
 
@@ -136,7 +159,7 @@ class TransactionController extends Controller
 
                     ]);
 
-                    $product->decrement('stock', $item['qty']);
+                    $stock->decrement('stock', $item['qty']);
                     }
 
                      DB::commit();
@@ -159,29 +182,51 @@ class TransactionController extends Controller
 
 
 
-    public function show(Transaction $transaction)
-    {
-        $transaction->load('items.product');
+   public function show(Transaction $transaction)
+{
+    $user = auth()->user();
 
-        return view(
-            'transactions.show',
-            compact('transaction')
-        );
+    if (
+        $user->role != 'owner' &&
+        $transaction->branch_id != $user->branch_id
+    ) {
+        abort(403);
     }
 
-    public function receipt(Transaction $transaction)
-        {
-            $transaction->load([
-                'items.product',
-                'user',
-                'branch'
-            ]);
+    $transaction->load([
+        'items.product',
+        'user',
+        'branch'
+    ]);
 
-            return view(
-                'transactions.receipt',
-                compact('transaction')
-            );
-        }
+    return view(
+        'transactions.show',
+        compact('transaction')
+    );
+}
+
+    public function receipt(Transaction $transaction)
+{
+    $user = auth()->user();
+
+    if (
+        $user->role != 'owner' &&
+        $transaction->branch_id != $user->branch_id
+    ) {
+        abort(403);
+    }
+
+    $transaction->load([
+        'items.product',
+        'user',
+        'branch'
+    ]);
+
+    return view(
+        'transactions.receipt',
+        compact('transaction')
+    );
+}
 
 
 }

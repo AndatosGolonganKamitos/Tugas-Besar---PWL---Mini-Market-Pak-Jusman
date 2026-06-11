@@ -10,8 +10,6 @@
             </div>
         </div>
     </x-slot>
-
-    {{-- TODO Backend: Ganti angka placeholder dengan data real dari controller --}}
     {{-- Summary Cards --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
@@ -65,67 +63,63 @@
             </thead>
             <tbody class="divide-y divide-gray-100">
 
-                @forelse($products as $product)
+                @forelse($stocks as $stock)
 
                 <tr>
 
                     <td class="px-6 py-4">
-                        {{ $product->code }}
+                        {{ $stock->product->code }}
                     </td>
 
                     <td class="px-6 py-4">
-                        {{ $product->name }}
+                        {{ $stock->product->name }}
                     </td>
 
                     <td class="px-6 py-4">
-                        {{ $product->category->name ?? '-' }}
+                        {{ $stock->product->category->name ?? '-' }}
                     </td>
 
                     <td class="px-6 py-4">
-                        Utama
+                        {{ $stock->branch->name ?? '-' }}
                     </td>
 
                     <td class="px-6 py-4">
-                        {{ $product->stock }}
+                        {{ $stock->stock }}
                     </td>
 
                     <td class="px-6 py-4">
-                        {{ $product->min_stock }}
+                        {{ $stock->product->min_stock }}
                     </td>
 
                     <td class="px-6 py-4">
 
-                        @if($product->stock == 0)
+                        @if($stock->stock == 0)
 
-                            <span class="text-red-600 font-semibold">
-                                Habis
-                            </span>
+                        <span class="text-red-600 font-semibold">
+                            Habis
+                        </span>
 
-                        @elseif($product->stock <= $product->min_stock)
+                    @elseif($stock->stock <= $stock->product->min_stock)
 
-                            <span class="text-amber-600 font-semibold">
-                                Menipis
-                            </span>
+                        <span class="text-amber-600 font-semibold">
+                            Menipis
+                        </span>
 
-                        @else
+                    @else
 
-                            <span class="text-green-600 font-semibold">
-                                Aman
-                            </span>
+                        <span class="text-green-600 font-semibold">
+                            Aman
+                        </span>
 
-                        @endif
+                    @endif
 
                     </td>
 
                     <td class="px-6 py-4 text-right">
-
-                        <a href="{{ route('master.products.edit', $product) }}"
+                        <a href="{{ route('inventory.stock-opname') }}"
                             class="px-3 py-1 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700">
-
                             Update Stok
-
                         </a>
-
                     </td>
 
                 </tr>
@@ -147,9 +141,8 @@
 
             </tbody>
 
-        {{-- TODO Backend: Ganti 0 dengan total produk --}}
         <div class="px-6 py-3 border-t border-gray-100 text-sm text-gray-500">
-            Total: {{ count($products) }} produk
+            Total: {{ count($stocks) }} produk
         </div>
     </div>
 </x-app-layout>

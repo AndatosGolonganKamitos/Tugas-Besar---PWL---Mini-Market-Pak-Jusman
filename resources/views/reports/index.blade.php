@@ -35,7 +35,7 @@
             <h3 class="font-semibold text-gray-900 mb-1">Laporan Keuangan</h3>
             <p class="text-sm text-gray-500">Laporan laba rugi dan arus kas</p>
         </a>
-
+         @if(auth()->user()->role === 'owner')
         <a href="{{ route('reports.branch') }}"
             class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:border-indigo-300 hover:shadow transition">
             <div class="w-12 h-12 rounded-lg bg-cyan-100 flex items-center justify-center mb-4">
@@ -44,10 +44,7 @@
             <h3 class="font-semibold text-gray-900 mb-1">Laporan Per Cabang</h3>
             <p class="text-sm text-gray-500">Perbandingan performa antar cabang</p>
         </a>
-
-        <a href="#" class="bg-white rounded-xl shadow-sm border-2 border-dashed border-gray-300 p-6 flex flex-col items-center justify-center text-gray-400 hover:text-indigo-500 hover:border-indigo-400 transition min-h-[180px]">
-            <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-            <span class="text-sm font-medium">Kustom Laporan</span>
-        </a>
+        @endif
+         
     </div>
 </x-app-layout>
